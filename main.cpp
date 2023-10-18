@@ -44,7 +44,7 @@ technetium, ruthenium;
 
 
 
-std::map<int, string> elementMap;
+map<int, string> elementMap;
 
 
 
