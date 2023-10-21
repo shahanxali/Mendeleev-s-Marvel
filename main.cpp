@@ -14,17 +14,18 @@ public:
     vector<int> Range;
 
 
-
-     Element(int atomicNumber, const string& atomicName, const string& symbol, const vector<int>& color, const vector<int>& range) :
-         AtomicNumber(atomicNumber), AtomicName(atomicName), Symbol(symbol), Color(color), Range(range) {}
+    //constructor to call and give the values to the properties each time called
+    Element(int atomicNumber, const string& atomicName, const string& symbol, const vector<int>& color, const vector<int>& range) : AtomicNumber(atomicNumber), AtomicName(atomicName), Symbol(symbol), Color(color), Range(range) {}
 
 
 };
 
 
-//map creation for storing the corresponding name and number for faster fetch
 
+//map creation for storing the corresponding name and number for faster fetch
+//global because i have to use it in every functions
 map<int, string> elementMap;
+
 
 
 
@@ -42,11 +43,15 @@ void properties() {
     vector<Element> elements;
 
     string line;
+
+    //while till last read dataset text line by line
     while (getline(inputFile, line)) {
+
         int atomicNumber;
         string atomicName, symbol;
         vector<int> color(3), range(3);
 
+        //split each line into elements
         istringstream iss(line);
         iss >> atomicName >> atomicNumber >> symbol;
         for (int i = 0; i < 3; i++) {
@@ -59,7 +64,9 @@ void properties() {
         Element element(atomicNumber, atomicName, symbol, color, range);
         elements.push_back(element);
 
+        //hasmap storage of atomic number and its symbol
         elementMap[atomicNumber] = symbol;
+
     }
 
     inputFile.close();
@@ -75,7 +82,7 @@ void properties() {
 vector<int> generateUniqueRandomNumbers(int count, int min, int max) {
 
     vector<int> uniqueNumbers;
-    srand(time(0)); // Seed the random number generator with the current time
+    srand(time(0)); // Seed the random number generator with the current time (different random generation everytime you call)
 
     // Generate at least 5 consecutive numbers
     int randomNumfirst = rand() % ((max -5) - min + 1) + min;
@@ -94,6 +101,11 @@ vector<int> generateUniqueRandomNumbers(int count, int min, int max) {
         }
     }
 
+
+    //this code sets up a random number generator (mt19937) and
+    //seeds it with a value from a hardware-based source of random entropy (random_device).
+    //This is a common way to generate random numbers with good statistical properties for various applications.
+    //and it is better than rand() function as it generates higher quality random numbers that is repeatation takes times.
     random_device rd;
     mt19937 g(rd());
 
@@ -107,7 +119,7 @@ vector<int> generateUniqueRandomNumbers(int count, int min, int max) {
 
 
 
-
+//print the grids in the terminal
 int printingforback(vector<vector<string>>& arr, vector<vector<int>>& indexel){
     cout<<"  ";
     for(int i=0;i<6;i++){
@@ -131,13 +143,16 @@ int printingforback(vector<vector<string>>& arr, vector<vector<int>>& indexel){
             row2.push_back(randoms[(6 * i) + j]);
             
             
-            cout << setw(4) << row[j];
+            cout << setw(4) << row[j]; //setw() function gives fixed space for each time it is called.
             cout << setw(1) << row2[j];
             
 
         }
+
+        //for user
         arr.push_back(row);
 
+        //for developer
         indexel.push_back(row2);
     }
     cout<<"\n";
@@ -198,15 +213,19 @@ int inputoutput(vector<vector<string>> arr, vector<vector<int>> indexel){
 
 int main() {
     
-    properties();
+    properties(); //dataset reading and creation of all the object with the name of each elements from the periodic table;
     
-    vector<vector<string>> check;
-    vector<vector<int>> indexel;
-    printingforback(check, indexel);
+    vector<vector<string>> check; //storing to print and watch in the terminal
+    vector<vector<int>> indexel; //storing for me (developer) to get element name to number or number to element;
+
+    printingforback(check, indexel); //print in terminal
     
-    inputoutput(check, indexel);
+    inputoutput(check, indexel); //take input and check the input or outputl
 
 
     return 0;
 }
 
+
+
+//In the end it doesnt even matter
