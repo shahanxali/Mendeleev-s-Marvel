@@ -163,6 +163,7 @@ int printingforback(vector<vector<string>>& arr, vector<vector<int>>& indexel){
 
 int inputoutput(vector<vector<string>> arr, vector<vector<int>> indexel){
 
+
     int a,b;
     cout<<"Enter the Index: ";
     cin>>a>>b;
@@ -212,12 +213,56 @@ int inputoutput(vector<vector<string>> arr, vector<vector<int>> indexel){
 //main function
 
 int main() {
+
+
+ cout << "Please enter some input: ";
+
+    // Create a promise and a future to handle user input
+    promise<string> user_input_promise;
+    future<string> user_input_future = user_input_promise.get_future();
+
+    // Create a thread to get user input
+    thread input_thread([&user_input_promise]() {
+        string input;
+        getline(cin, input);
+        user_input_promise.set_value(input);
+    });
+
+    // Wait for 5 seconds for user input
+    if (user_input_future.wait_for(chrono::seconds(5)) == future_status::timeout) {
+        cout << "No input in 5 seconds." << endl;
+    } else {
+        cout << "You entered: " << user_input_future.get() << endl;
+    }
+
+    // Clean up the thread
+    if (input_thread.joinable()) {
+        input_thread.join();
+    }
+
+
+
+
+
     
     properties(); //dataset reading and creation of all the object with the name of each elements from the periodic table;
     
     vector<vector<string>> check; //storing to print and watch in the terminal
     vector<vector<int>> indexel; //storing for me (developer) to get element name to number or number to element;
 
+    for(int i=0; i<5; i++){
+
+        printingforback(check, indexel); //print in terminal
+
+        auto startTime = chrono::high_resolution_clock::now();
+        while (chrono::duration_cast<chrono::seconds>(chrono::high_resolution_clock::now() - startTime).count() < 5) {
+            inputoutput(check, indexel); //take input and check the input or outputl
+        }
+
+    }
+
+
+    
     printingforback(check, indexel); //print in terminal
     
     inputoutput(check, indexel); //take input and check the input or outputl
