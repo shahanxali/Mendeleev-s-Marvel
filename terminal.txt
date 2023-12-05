@@ -1,2 +1,2 @@
-g++ check.cpp -o check -lfreeglut -lglew32 -lglfw3 -lopengl32
-.\check   
+g++ main.cpp -o main -lfreeglut -lglew32 -lglfw3 -lopengl32
+.\main

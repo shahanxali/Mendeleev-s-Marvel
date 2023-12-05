@@ -1,6 +1,7 @@
+#include <GL/glut.h>
 #include<bits/stdc++.h>
-using namespace std;
 
+using namespace std;
 
 
 //creating the blueprint of the elements (properties)
@@ -27,7 +28,13 @@ class Element {
 map<int, string> elementMap;
 
 
+// Vector to store selected elements
+vector<string> selectedElements;
+vector<int> indexel;
 
+vector<pair<int, int>> selectedCells;
+
+int counting = 1;
 
 void properties() {
 
@@ -78,7 +85,6 @@ void properties() {
 
 
 
-
 vector<int> generateUniqueRandomNumbers(int count, int min, int max) {
 
     vector<int> uniqueNumbers;
@@ -119,158 +125,183 @@ vector<int> generateUniqueRandomNumbers(int count, int min, int max) {
 
 
 
-//print the grids in the terminal
-int printingforback(vector<vector<string>>& arr, vector<vector<int>>& indexel){
-    cout<<"  ";
-    for(int i=0;i<6;i++){
-        cout<<setw(5)<<i;
+
+
+
+
+int gridSize = 6;
+float cellSize = 1.0 / gridSize;
+int selectedRow = -1;
+int selectedCol = -1;
+
+vector<int> randoms = generateUniqueRandomNumbers(36, 1, 40);
+
+void drawBlackScreen() {
+    
+    glutSetWindow(1);  // Switch to the second window
+    glClear(GL_COLOR_BUFFER_BIT);
+    glLoadIdentity();
+    glClearColor(0.0, 0.0, 0.0, 0.0); // Set the background color to black
+    
+
+    // Print the integer in the middle of the black screen
+    glColor3f(1.0, 1.0, 1.0);  // Set text color to white
+    
+    string countingString = to_string(counting);
+    float xPos = 0.4;
+    float yPos = 0.5;
+    glRasterPos2f(xPos, yPos);
+
+
+
+    string no = "your score is: ";
+    for(char c: no){
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, c);
     }
 
-    vector<int> randoms = generateUniqueRandomNumbers(36, 1, 40);
+    for (char c : countingString) {
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, c);
+    }
+
+    
+    glutPostRedisplay();
+    
+    
+}
 
 
-    for(int i=0;i<6;i++){
+
+
+void drawGrid() {
+
+
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);  // Set the orthographic view
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    if (selectedRow == -1 || selectedCol == -1) {
+        selectedElements.clear();
+    }
+
+    for (int i = 0; i < gridSize; ++i) {
         vector<string> row;
         vector<int> row2;
-        for(int j=0;j<6;j++){
-            if(j==0){
-                int k=i+65;
-                cout<<"\n"<<i<<" ";
+        for (int j = 0; j < gridSize; ++j) {
+
+            // Check if the current cell is in the list of selected cells
+            auto it = find(selectedCells.begin(), selectedCells.end(), make_pair(i, j));
+            if (it != selectedCells.end()) {
+                // Highlight the selected grid with a lighter color
+                glColor3f(0.7, 0.7, 0.2); // Adjust the color as needed
+            } else {
+                // Set the default color
+                glColor3f((float)i / gridSize, (float)j / gridSize, 0.5);
             }
+
+            // Set a unique color for each grid cell
+            if (i == selectedRow && j == selectedCol) {
+                // Highlight the selected grid with a lighter color
+                glColor3f((float)i / gridSize + 0.2, (float)j / gridSize + 0.2, 0.7);
+            } else {
+                glColor3f((float)i / gridSize, (float)j / gridSize, 0.5);
+            }
+
+            // Draw the square
+            glBegin(GL_QUADS);
+            glVertex2f(j * cellSize, i * cellSize);
+            glVertex2f((j + 1) * cellSize, i * cellSize);
+            glVertex2f((j + 1) * cellSize, (i + 1) * cellSize);
+            glVertex2f(j * cellSize, (i + 1) * cellSize);
+            glEnd();
+
             
+            glColor3f(0.0, 0.0, 0.0);  // Set text color to black
+            glRasterPos2f(j * cellSize + cellSize * 0.35, i * cellSize + cellSize * 0.5);
+
+            // Store the selected elements in the vector
+            if (i == selectedRow && j == selectedCol) {
+                string currentElement = elementMap[randoms[(6 * i) + j]];
+                int cur = randoms[(6 * i) + j];
+                
+                if (selectedElements.empty() || currentElement != selectedElements.back()) {
+                    selectedElements.push_back(currentElement);
+                    indexel.push_back(cur);
+                }
+
+            }
+
             row.push_back(elementMap[randoms[(6 * i) + j]]);
-
             row2.push_back(randoms[(6 * i) + j]);
-            
-            
-            cout << setw(4) << row[j]; //setw() function gives fixed space for each time it is called.
-            cout << setw(1) << row2[j];
-            
 
-        }
-
-        //for user
-        arr.push_back(row);
-
-        //for developer
-        indexel.push_back(row2);
-    }
-    cout<<"\n";
-    return 0;
-}
-
-
-
-int inputoutput(vector<vector<string>> arr, vector<vector<int>> indexel){
-
-
-    int a,b;
-    cout<<"Enter the Index: ";
-    cin>>a>>b;
-
-
-    int current = indexel[a][b]; // Initialize the current number
-    
-    int consecutiveCount = 0; // Initialize the consecutive count
-
-    while (true) {
-        cout << "Enter the next index: ";
-        int userInput1,userInput2;
-        cin >> userInput1 >> userInput2;
-
-        if (indexel[userInput1][userInput2] == current + 1) {
-            current = indexel[userInput1][userInput2]; // Update the current number
-            
-            consecutiveCount++; // Increment the consecutive count
-        } 
-        else {
-            break; // Exit the loop when a non-consecutive number is provided
+            for (char c : row[j]) {
+                glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, c);
+            }
         }
     }
 
-    cout << "Your score: " << consecutiveCount + 1 << " consecutive numbers" << endl;
 
 
-    return 0;
-
-}
-
-
-
-
-
-
-//Start rendering all the called elements
-
-
-
-
-
-
-
-
-
-//main function
-
-int main() {
-
-
- cout << "Please enter some input: ";
-
-    // Create a promise and a future to handle user input
-    promise<string> user_input_promise;
-    future<string> user_input_future = user_input_promise.get_future();
-
-    // Create a thread to get user input
-    thread input_thread([&user_input_promise]() {
-        string input;
-        getline(cin, input);
-        user_input_promise.set_value(input);
-    });
-
-    // Wait for 5 seconds for user input
-    if (user_input_future.wait_for(chrono::seconds(5)) == future_status::timeout) {
-        cout << "No input in 5 seconds." << endl;
-    } else {
-        cout << "You entered: " << user_input_future.get() << endl;
-    }
-
-    // Clean up the thread
-    if (input_thread.joinable()) {
-        input_thread.join();
-    }
-
-
-
-
-
-    
-    properties(); //dataset reading and creation of all the object with the name of each elements from the periodic table;
-    
-    vector<vector<string>> check; //storing to print and watch in the terminal
-    vector<vector<int>> indexel; //storing for me (developer) to get element name to number or number to element;
-
-    for(int i=0; i<5; i++){
-
-        printingforback(check, indexel); //print in terminal
-
-        auto startTime = chrono::high_resolution_clock::now();
-        while (chrono::duration_cast<chrono::seconds>(chrono::high_resolution_clock::now() - startTime).count() < 5) {
-            inputoutput(check, indexel); //take input and check the input or outputl
+    if(selectedElements.size()>=2){
+        
+        if(indexel[indexel.size()-1] == indexel[indexel.size()-2] + 1){
+            
+            counting++;
         }
+        else{
 
+            drawBlackScreen();
+        }
     }
 
-
     
-    printingforback(check, indexel); //print in terminal
     
-    inputoutput(check, indexel); //take input and check the input or outputl
+    glFlush();
+}
+
+void onMouseClick(int button, int state, int x, int y) {
 
 
-    return 0;
+
+    if (button == GLUT_LEFT_BUTTON && (state == GLUT_DOWN)) {
+        // Convert mouse coordinates to grid indices
+        selectedCol = x / (glutGet(GLUT_WINDOW_WIDTH) / gridSize);
+        selectedRow = gridSize - y / (glutGet(GLUT_WINDOW_HEIGHT) / gridSize) - 1;
+       
+        // Add the clicked cell to the list of selected cells
+        selectedCells.push_back(make_pair(selectedCol, selectedRow));
+
+        // glutPostRedisplay();  // Trigger a redraw only on mouse click
+    }
+    
 }
 
 
+void initialize() {
+    
+    glClearColor(1.0, 1.0, 1.0, 1.0); // Set the background color (white)
+    glutMouseFunc(onMouseClick);
+    
+}
 
-//In the end it doesnt even matter
+int main(int argc, char** argv) {
+
+    properties();
+
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowSize(600, 600); // Adjust the window size as needed
+    glutCreateWindow("Mendeleev's Marvel");
+
+    initialize();
+
+    glutDisplayFunc(drawGrid);
+    
+    glutMainLoop();
+
+    return 0;
+}
