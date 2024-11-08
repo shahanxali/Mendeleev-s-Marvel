@@ -14,6 +14,10 @@ Periodic Table Challenge: The player must select two consecutive elements from t
 Scoring System: Each correct selection of consecutive elements adds to the score. A wrong selection ends the game.
 Educational: Learn about the periodic table while playing!
 
+## 📸 Screenshots
+
+![Game](Screenshots/1.png)
+
 ## 🎮 How to Play
 
 Select a Grid: The game starts with a randomly generated grid filled with periodic elements. Choose any grid from the available options.
