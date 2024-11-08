@@ -1,7 +1,8 @@
 # Mendeleev's Marvel 🌟
 
 Welcome to Mendeleev's Marvel — a 2D grid-based game that combines education and entertainment! Created as a Minor-2 project during my 6th semester, this game is designed to help players explore the periodic table of elements in a fun and interactive way.
-🧑‍🔬 Game Overview
+
+## 🧑‍🔬 Game Overview
 
 In Mendeleev's Marvel, the grid is randomly populated with periodic elements and colored grids. The player’s task is to select grids where the elements are consecutive in the periodic table order. If the player selects consecutive elements, they earn points. However, selecting non-consecutive elements ends the game and displays the final score.
 
